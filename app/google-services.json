@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "823956137047",
+    "firebase_url": "https://reconocimientofacial-f06ea.firebaseio.com",
+    "project_id": "reconocimientofacial-f06ea",
+    "storage_bucket": "reconocimientofacial-f06ea.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:823956137047:android:a23fcf10e40db81d",
+        "android_client_info": {
+          "package_name": "pe.jrivera6.reconocimientofacialapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "823956137047-utpt07j6lrtgblab8udb0lmljcv3da03.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pe.jrivera6.reconocimientofacialapp",
+            "certificate_hash": "0b415bfbcee5e99328c75c00c781f69ecddef4b6"
+          }
+        },
+        {
+          "client_id": "823956137047-trp3oicn3pg9b0o0psukgqf2835mn1sb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4fkaon2qaC9bw0Gx0L8GriZlIFhI2dTg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "823956137047-trp3oicn3pg9b0o0psukgqf2835mn1sb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
