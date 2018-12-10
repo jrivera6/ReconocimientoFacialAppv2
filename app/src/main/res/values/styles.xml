@@ -8,4 +8,49 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="NoActionBarThemeLogin" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <style name="NoActionBarThemeRegistro" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <style name="NoActionBarThemeCamera" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <style name="MaterialButton" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">@color/colorIndigo</item>
+        <item name="colorButtonNormal">@color/colorAccent</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="MaterialButtonDisable" parent="Theme.AppCompat.Light">
+        <item name="colorButtonNormal">@color/colorDisable</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+    
+    <style name="MaterialCardView" parent="Theme.AppCompat.Light">
+        <item name="cardCornerRadius">20dp</item>
+        <item name="cardElevation">10dp</item>
+        <item name="cardPreventCornerOverlap">false</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:foreground">?android:attr/selectableItemBackground</item>
+    </style>
+
+
+
 </resources>

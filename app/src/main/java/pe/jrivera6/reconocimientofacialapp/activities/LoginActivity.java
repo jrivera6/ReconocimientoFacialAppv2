@@ -1,149 +1,216 @@
 package pe.jrivera6.reconocimientofacialapp.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
+import java.util.List;
 
+import jp.wasabeef.blurry.Blurry;
 import pe.jrivera6.reconocimientofacialapp.R;
-import pe.jrivera6.reconocimientofacialapp.repositories.UserRepository;
+import pe.jrivera6.reconocimientofacialapp.models.Usuario;
+import pe.jrivera6.reconocimientofacialapp.services.ApiService;
+import pe.jrivera6.reconocimientofacialapp.services.ApiServiceGenerator;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
+public class LoginActivity extends AppCompatActivity {
 
+    private static final String TAG = LoginActivity.class.getSimpleName();
+    private SharedPreferences sharedPreferences;
+    private EditText txtEmail, txtPassword;
 
-
-    private GoogleApiClient googleApiClient;
-    private SignInButton signInButton;
-    private FirebaseAuth firebaseAuth;
-    private FirebaseAuth.AuthStateListener firebaseAuthListener;
-    public static final int SIGN_IN_CODE = 777;
-    String name,email,tokken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
+        Button btnLogin = findViewById(R.id.btn_login);
+        txtEmail = findViewById(R.id.txt_email);
+        txtPassword = findViewById(R.id.txt_password);
+        TextView txtRegistrar = findViewById(R.id.msg_register_click);
 
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this,this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String sharedUsername = sharedPreferences.getString("username",null);
+        if (sharedUsername != null){
+            txtEmail.setText(sharedUsername);
+            txtPassword.requestFocus();
+        }
 
-        signInButton = findViewById(R.id.btnSingIn);
-        signInButton.setOnClickListener(new View.OnClickListener() {
+        if(sharedPreferences.getBoolean("islogged",false)){
+            goToMainActivity();
+        }
+
+        btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
-                startActivityForResult(intent,SIGN_IN_CODE);
 
+                validarFormulario();
 
             }
         });
 
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseAuthListener = new FirebaseAuth.AuthStateListener() {
+        txtRegistrar.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-
-                if (user != null){
-
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    name = user.getDisplayName();
-                    email = user.getEmail();
-                    tokken = user.getUid();
-                    finish();
-                    Toast.makeText(LoginActivity.this,"Se guardaron sus datos",Toast.LENGTH_LONG).show();
-                }
-                assert user != null;
-
-                UserRepository.create(name,email,tokken );
+            public void onClick(View view) {
+                registrar();
             }
-        };
+        });
+
+
 
     }
+
+    private void registrar(){
+        Intent intent = new Intent(this, RegisterActivity.class);
+        startActivity(intent);
+    }
+
+    private void goToMainActivity() {
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    private void validarFormulario() {
+
+        String usuario = txtEmail.getText().toString().trim();
+        String password = txtPassword.getText().toString();
+
+        if (usuario.isEmpty() || password.isEmpty() ){
+            Toast.makeText(this, "Necesario llenar datos", Toast.LENGTH_SHORT).show();
+            return;
+        }else{
+            login(usuario,password);
+        }
+    }
+//        for(Usuario u: usuarios){
+//
+//            String uEmail = u.getEmail();
+//            String uUsername = u.getUsername();
+//            String uPassword = u.getPassword();
+//        }
+
+
 
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        firebaseAuth.addAuthStateListener(firebaseAuthListener);
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == SIGN_IN_CODE){
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleSingInResult(result);
-        }
-
-    }
-
-    private void handleSingInResult(GoogleSignInResult result) {
-
-        if (result.isSuccess()){
-            firebaseAuthWithGoogle(result.getSignInAccount());
-            /*Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);*/
-        } else {
-            Toast.makeText(this, "No se pudo iniciar sesión",Toast.LENGTH_SHORT).show();
-        }
-
-    }
-
-    private void firebaseAuthWithGoogle(GoogleSignInAccount signInAccount) {
-
-        AuthCredential credential = GoogleAuthProvider.getCredential(signInAccount.getIdToken(), null);
-        firebaseAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+        ImageView rootWall = findViewById(R.id.wallp_login);
+        TextView msgRegister = findViewById(R.id.msg_register_click);
+        rootWall.post(new Runnable() {
             @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (!task.isSuccessful()){
-                    Toast.makeText(LoginActivity.this, "No se pudo autenticar", Toast.LENGTH_LONG).show();
-                }
+            public void run() {
+                Blurry.with(getApplicationContext())
+                        .radius(5)
+                        .sampling(2)
+                        .async()
+                        .capture(findViewById(R.id.wallp_login))
+                        .into((ImageView) findViewById(R.id.wallp_login));
             }
         });
-    }
-
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        if (firebaseAuthListener != null){
-            firebaseAuth.removeAuthStateListener(firebaseAuthListener);
-        }
 
     }
+
+
+    public void login(final String usuario, final String password){
+
+        ApiService service = ApiServiceGenerator.createService(ApiService.class);
+        Call<List<Usuario>> call = service.getUsuarios();
+
+        call.enqueue(new Callback<List<Usuario>>() {
+            @Override
+            public void onResponse(Call<List<Usuario>> call, Response<List<Usuario>> response) {
+
+                try{
+
+                    int statusCode = response.code();
+                    Log.d(TAG, "onResponse: "+statusCode);
+                    if(response.isSuccessful()){
+
+                        List<Usuario> usuarios = response.body();
+                        Log.d(TAG, "onResponse: "+usuarios);
+
+                        for (Usuario u:usuarios){
+
+                            //String uEmail = u.getEmail();
+                            String uUsername = u.getUsername();
+                            String uPassword = u.getPassword();
+
+
+                            if(usuario.equals(uUsername) && password.equals(uPassword)){
+                                boolean existe = sharedPreferences.getBoolean("isExist",false);
+                                Log.d(TAG, "EXISTE: "+existe);
+                                if (!existe){
+                                    Log.d(TAG, "CREANDO SHAREDPREFENCE");
+                                    Long id = u.getId();
+                                    String nombres = u.getNombres();
+                                    String apellidos = u.getApellidos();
+                                    String email = u.getEmail();
+
+                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                                    boolean success = editor
+                                            .putBoolean("islogged",true)
+                                            .putBoolean("isExist",true)
+                                            .putLong("id",id)
+                                            .putString("nombres",nombres)
+                                            .putString("apellidos",apellidos)
+                                            .putString("username",uUsername)
+                                            .putString("email",email)
+                                            .commit();
+                                    goToMainActivity();
+                                    finish();
+                                }else{
+                                    Log.d(TAG, "LO PASA DE FRENTE: ");
+                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                                    boolean success = editor
+                                            .putBoolean("islogged",true)
+                                            .commit();
+                                    goToMainActivity();
+                                    finish();
+                                }
+
+                            }else{
+                                Toast.makeText(LoginActivity.this, "Usuario o contraseña no coinciden", Toast.LENGTH_SHORT).show();
+                            }
+
+
+                        }
+
+                    }else {
+                        Log.d(TAG, "onResponse: "+response.errorBody().toString());
+                        throw new Exception("Error en el servicio");
+                    }
+
+                }catch (Throwable t){
+
+                }
+
+
+            }
+
+            @Override
+            public void onFailure(Call<List<Usuario>> call, Throwable t) {
+
+            }
+        });
+
+
+
+
+    }
+
 }
