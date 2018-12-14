@@ -1,14 +1,23 @@
 package pe.jrivera6.reconocimientofacialapp.activities;
 
+import android.animation.Animator;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.view.animation.Interpolator;
 import android.widget.Toast;
 
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
 import pe.jrivera6.reconocimientofacialapp.R;
 import pe.jrivera6.reconocimientofacialapp.adapters.RostroAdapter;
 import pe.jrivera6.reconocimientofacialapp.models.Captura;
@@ -25,16 +34,63 @@ public class FaceResultActivity extends AppCompatActivity {
 
     private static final String TAG = "FaceResultActivity";
     
-    RecyclerView recyclerView;
+    private RecyclerView recyclerView;
+    private FloatingActionButton fbtnGuardar;
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_face_result);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         recyclerView = findViewById(R.id.recycle_rostros);
+        fbtnGuardar = findViewById(R.id.floatingActionButton);
+        fbtnGuardar.setScaleX(0);
+        fbtnGuardar.setScaleX(0);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            final Interpolator interpolador = AnimationUtils.loadInterpolator(getBaseContext(),
+                    android.R.interpolator.fast_out_slow_in);
+
+            fbtnGuardar.animate()
+                    .scaleX(1)
+                    .scaleY(1)
+                    .setInterpolator(interpolador)
+                    .setDuration(600)
+                    .setStartDelay(1000)
+                    .setListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+
+                        }
+                    });
+        }
 
         rostrosDetectados();
-        obtenerDatos();
 
+        fbtnGuardar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                obtenerDatos();
+
+
+            }
+        });
 
     }
 
@@ -98,6 +154,8 @@ public class FaceResultActivity extends AppCompatActivity {
         Log.d(TAG, "enviarRostrosServicio: LLEGO");
         Captura captura = null;
         List<Rostro> rostros = FaceRepository.rostroLista;
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
 
         for(Captura c:capturas){
             if (c.getNombre_captura().equals(nombre_captura)){
@@ -106,16 +164,24 @@ public class FaceResultActivity extends AppCompatActivity {
             }
         }
 
+        boolean success = editor.putLong("captura_id",captura.getId()).commit();
+
         for (Rostro r:rostros){
+
+            String estado_rostro = r.getEstado_rostro();
+            String array[] = estado_rostro.split(":");
+            String estado = array[0];
+            Log.d(TAG, "enviarRostrosServicio: "+estado);
 
             ApiService apiService = ApiServiceGenerator.createService(ApiService.class);
             Call<ResponseMessage> call;
-            call = apiService.createRostros(r.getGenero_rostro(), (long) 1,captura.getId());
+            call = apiService.createRostros(r.getGenero_rostro(), estado,captura.getId());
             call.enqueue(new Callback<ResponseMessage>() {
                 @Override
                 public void onResponse(Call<ResponseMessage> call, Response<ResponseMessage> response) {
                     if(response.isSuccessful()){
-                        Toast.makeText(FaceResultActivity.this, "Enviado Correctamente", Toast.LENGTH_SHORT).show();
+                        Toasty.success(FaceResultActivity.this,"Se guardaron los rostros", Toast.LENGTH_SHORT).show();
+
                     }
                 }
 
@@ -127,7 +193,10 @@ public class FaceResultActivity extends AppCompatActivity {
 
         }
 
-
+        Intent intent = new Intent(FaceResultActivity.this,GraficaActivity.class);
+        intent.putExtra("usuario_id",captura.getId());
+        Log.d(TAG, "enviarRostrosServicio: "+captura.getId());
+        startActivity(intent);
 
     }
 

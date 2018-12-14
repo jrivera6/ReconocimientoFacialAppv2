@@ -10,15 +10,21 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
+import es.dmoral.toasty.Toasty;
 import pe.jrivera6.reconocimientofacialapp.R;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    private static final int INTERVALO = 2000; //2 segundos para salir
+    private long tiempoPrimerClick;
+
     private SharedPreferences sharedPreferences;
     private CardView cardCamera;
+    private CardView cardGrafico;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate: "+username);
 
         cardCamera = findViewById(R.id.card_camera);
+        cardGrafico = findViewById(R.id.card_grafico);
 
         cardCamera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -38,14 +45,34 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        cardGrafico.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                GraficaActivity();
+            }
+        });
+
+    }
+
+    @Override
+    public void onBackPressed(){
+        if (tiempoPrimerClick + INTERVALO > System.currentTimeMillis()){
+            super.onBackPressed();
+            return;
+        }else {
+            Toasty.info(this,"Presionar dos veces para salir",Toast.LENGTH_SHORT,true).show();
+        }
+        tiempoPrimerClick = System.currentTimeMillis();
     }
 
     public void cerrarSesion(){
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        boolean success = editor.putBoolean("islogged", false).commit();
+//        boolean success = editor.putBoolean("islogged", false).commit();
+        boolean success = editor.clear().commit();
         goToLoginActivity();
         finish();
     }
+
 
     private void goToLoginActivity() {
         Intent intent = new Intent(this,LoginActivity.class);
@@ -74,6 +101,11 @@ public class MainActivity extends AppCompatActivity {
 
         Intent i = new Intent(MainActivity.this, CamaraResultActivity.class);
         startActivity(i);
+    }
+
+    private void GraficaActivity(){
+        Intent intent = new Intent(MainActivity.this,GraficaActivity.class);
+        startActivity(intent);
     }
 
 }

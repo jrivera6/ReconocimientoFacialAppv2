@@ -8,10 +8,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import es.dmoral.toasty.Toasty;
 import pe.jrivera6.reconocimientofacialapp.R;
 import pe.jrivera6.reconocimientofacialapp.models.ResponseMessage;
 import pe.jrivera6.reconocimientofacialapp.services.ApiService;
@@ -24,9 +26,12 @@ public class RegisterActivity extends AppCompatActivity {
 
     private static final String TAG = RegisterActivity.class.getSimpleName();
 
+    private static final String EMAIL_PATTERN = "^[a-zA-Z0-9#_~!$&'()*+,;=:.\"(),:;<>@\\[\\]\\\\]+@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*$";
+    private Pattern pattern = Pattern.compile(EMAIL_PATTERN);
+    private Matcher matcher;
+
     private EditText txtNombres, txtApellidos, txtNombreUsuario, txtEmail, txtContraseña, txtConfirmContraseña;
-    private RadioGroup radioGroup;
-    private RadioButton radioButtonSexo;
+
 
 
     @Override
@@ -40,15 +45,13 @@ public class RegisterActivity extends AppCompatActivity {
         txtEmail = findViewById(R.id.txt_email);
         txtContraseña = findViewById(R.id.txt_password);
         txtConfirmContraseña = findViewById(R.id.txt_confirm_password);
-        radioGroup = findViewById(R.id.rdb_sexo);
+
         Button btnRegistrar = findViewById(R.id.btn_registrar);
 
 
         btnRegistrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int radioButtonId = radioGroup.getCheckedRadioButtonId();
-                radioButtonSexo = findViewById(radioButtonId);
 
                 String nombres = txtNombres.getText().toString();
                 String apellidos = txtApellidos.getText().toString();
@@ -60,6 +63,18 @@ public class RegisterActivity extends AppCompatActivity {
                 if (nombres.isEmpty() || apellidos.isEmpty() || email.isEmpty() ||
                         password.isEmpty() || confirmPass.isEmpty() ) {
                     Toast.makeText(RegisterActivity.this, "Faltan llenar datos", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+
+
+                if(!validateEmail(email)){
+                    Toasty.error(RegisterActivity.this,"Email no valido", Toast.LENGTH_SHORT,true).show();
+                    return;
+                }
+
+                if(!validatePassword(password)){
+                    Toasty.error(RegisterActivity.this,"Contraseña muy debil", Toast.LENGTH_SHORT,true).show();
                     return;
                 }
 
@@ -86,11 +101,12 @@ public class RegisterActivity extends AppCompatActivity {
                                 ResponseMessage responseMessage = response.body();
                                 Log.d(TAG, "Response Message Positivo" + responseMessage);
                                 Toast.makeText(RegisterActivity.this, responseMessage.getMessage(), Toast.LENGTH_LONG).show();
-                                Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                                 startActivity(intent);
                                 finish();
 
                             } else {
+                                Toasty.error(RegisterActivity.this,"Usuario ya existente", Toast.LENGTH_SHORT,true).show();
                                 Log.e(TAG, "onError: " + response.errorBody().string());
                                 throw new Exception("Error en el servicio");
                             }
@@ -109,7 +125,7 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onFailure(Call<ResponseMessage> call, Throwable t) {
 
                         Log.e(TAG, "onFailure: " + t.toString());
-                        Toast.makeText(RegisterActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                        Toasty.error(RegisterActivity.this,"Error en el servicio", Toast.LENGTH_SHORT,true).show();
 
 
                     }
@@ -118,6 +134,16 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private boolean validatePassword(String password) {
+        return password.length()>6;
+    }
+
+    private boolean validateEmail(String email) {
+
+        matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 
 

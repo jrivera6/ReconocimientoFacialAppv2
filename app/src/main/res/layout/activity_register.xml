@@ -17,147 +17,170 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center|top"
-        android:padding="40dp">
+        android:paddingTop="40dp"
+        android:paddingBottom="40dp"
+        android:paddingStart="25dp"
+        android:paddingEnd="25dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="10dp"
             android:gravity="center"
             android:textStyle="bold"
             android:textSize="40sp"
             android:textColor="#fff"
             android:text="Registro" />
 
-        <android.support.v7.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="25dp">
+
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:padding="20dp">
+                android:paddingTop="20dp"
+                android:paddingBottom="20dp"
+                android:background="@drawable/trans_white_rectagle">
 
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        app:counterMaxLength="10"
+                        app:hintEnabled="false">
 
                         <EditText
                             android:id="@+id/txt_firstname"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="40dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginEnd="15dp"
                             android:inputType="textAutoCorrect"
-                            android:drawableStart="@drawable/ic_perm_identity_black_24dp"
-                            android:hint=" Nombre"
+                            android:background="@drawable/custom_edittext"
+                            android:drawableStart="@drawable/ic_person_black_24dp"
+                            android:drawablePadding="5dp"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
+                            android:hint="Nombre"
                             android:focusable="true"
-                            android:focusableInTouchMode="true"/>
+                            android:focusableInTouchMode="true" />
 
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        app:hintEnabled="false">
 
                         <EditText
                             android:id="@+id/txt_lastname"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="40dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginEnd="15dp"
                             android:inputType="textAutoCorrect"
-                            android:drawableStart="@drawable/ic_perm_identity_black_24dp"
-                            android:hint=" Apellido" />
+                            android:background="@drawable/custom_edittext"
+                            android:drawableStart="@drawable/ic_person_black_24dp"
+                            android:drawablePadding="5dp"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
+                            android:hint="Apellido"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true" />
 
                     </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    app:hintEnabled="false">
 
                     <EditText
                         android:id="@+id/txt_username"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textAutoComplete"
-                        android:drawableStart="@drawable/ic_perm_identity_black_24dp"
-                        android:hint=" Nombre de usuario" />
+                        android:layout_height="40dp"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:inputType="textAutoCorrect"
+                        android:background="@drawable/custom_edittext"
+                        android:drawableStart="@drawable/ic_person_black_24dp"
+                        android:drawablePadding="5dp"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:hint="Nombre de usuario" />
 
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    app:hintEnabled="false">
 
                     <EditText
                         android:id="@+id/txt_email"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
                         android:inputType="textEmailAddress"
+                        android:background="@drawable/custom_edittext"
                         android:drawableStart="@drawable/ic_email_black_24dp"
-                        android:hint=" Correo electronico" />
+                        android:drawablePadding="5dp"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:hint="Correo electronico" />
 
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:passwordToggleEnabled="true">
+                    android:layout_marginBottom="8dp"
+                    app:passwordToggleEnabled="true"
+                    app:hintEnabled="false">
 
                     <EditText
                         android:id="@+id/txt_password"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
                         android:inputType="textPassword"
-                        android:drawableStart="@drawable/ic_lock_open_black_24dp"
-                        android:hint=" Constraseña" />
+                        android:background="@drawable/custom_edittext"
+                        android:drawableStart="@drawable/ic_lock_outline_black_24dp"
+                        android:drawablePadding="5dp"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:hint="Contraseña" />
 
                 </android.support.design.widget.TextInputLayout>
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:passwordToggleEnabled="true">
+                    app:passwordToggleEnabled="true"
+                    app:hintEnabled="false">
 
                     <EditText
                         android:id="@+id/txt_confirm_password"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
                         android:inputType="textPassword"
-                        android:drawableStart="@drawable/ic_lock_outline_black_24dp"
-                        android:hint=" Confirmar contraseña" />
+                        android:background="@drawable/custom_edittext"
+                        android:drawableStart="@drawable/ic_asterisk"
+                        android:drawablePadding="5dp"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:hint="Confirmar contraseña" />
 
                 </android.support.design.widget.TextInputLayout>
-                <RadioGroup
-                    android:id="@+id/rdb_sexo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="8dp"
-                        android:textSize="18dp"
-                        android:text="Sexo:"/>
-                    <RadioButton
-                        android:id="@+id/rdb_hombre"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:checked="true"
-                        android:text="Hombre" />
-
-                    <RadioButton
-                        android:id="@+id/rdb_mujer"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Mujer" />
-                </RadioGroup>
             </LinearLayout>
-
-        </android.support.v7.widget.CardView>
 
         <Button
             android:id="@+id/btn_registrar"

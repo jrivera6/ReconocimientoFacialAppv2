@@ -10,11 +10,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
 import jp.wasabeef.blurry.Blurry;
 import pe.jrivera6.reconocimientofacialapp.R;
 import pe.jrivera6.reconocimientofacialapp.models.Usuario;
@@ -29,6 +32,8 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
     private SharedPreferences sharedPreferences;
     private EditText txtEmail, txtPassword;
+    private ProgressBar progressBar;
+    private LinearLayout linearLayout;
 
 
     @Override
@@ -39,6 +44,8 @@ public class LoginActivity extends AppCompatActivity {
         Button btnLogin = findViewById(R.id.btn_login);
         txtEmail = findViewById(R.id.txt_email);
         txtPassword = findViewById(R.id.txt_password);
+        linearLayout = findViewById(R.id.formulario);
+        progressBar = findViewById(R.id.barra_circular);
         TextView txtRegistrar = findViewById(R.id.msg_register_click);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -55,6 +62,7 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
 
                 validarFormulario();
 
@@ -81,6 +89,7 @@ public class LoginActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+        finish();
     }
 
     private void validarFormulario() {
@@ -89,7 +98,7 @@ public class LoginActivity extends AppCompatActivity {
         String password = txtPassword.getText().toString();
 
         if (usuario.isEmpty() || password.isEmpty() ){
-            Toast.makeText(this, "Necesario llenar datos", Toast.LENGTH_SHORT).show();
+            Toasty.info(this,"Necesario llenar datos", Toast.LENGTH_SHORT).show();
             return;
         }else{
             login(usuario,password);
@@ -144,50 +153,54 @@ public class LoginActivity extends AppCompatActivity {
                         List<Usuario> usuarios = response.body();
                         Log.d(TAG, "onResponse: "+usuarios);
 
+                        Usuario usu = null;
+                        boolean valid = false;
+
                         for (Usuario u:usuarios){
 
-                            //String uEmail = u.getEmail();
-                            String uUsername = u.getUsername();
-                            String uPassword = u.getPassword();
+                            if(usuario.equals(u.getUsername()) && password.equals(u.getPassword())){
 
-
-                            if(usuario.equals(uUsername) && password.equals(uPassword)){
-                                boolean existe = sharedPreferences.getBoolean("isExist",false);
-                                Log.d(TAG, "EXISTE: "+existe);
-                                if (!existe){
-                                    Log.d(TAG, "CREANDO SHAREDPREFENCE");
-                                    Long id = u.getId();
-                                    String nombres = u.getNombres();
-                                    String apellidos = u.getApellidos();
-                                    String email = u.getEmail();
-
-                                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                                    boolean success = editor
-                                            .putBoolean("islogged",true)
-                                            .putBoolean("isExist",true)
-                                            .putLong("id",id)
-                                            .putString("nombres",nombres)
-                                            .putString("apellidos",apellidos)
-                                            .putString("username",uUsername)
-                                            .putString("email",email)
-                                            .commit();
-                                    goToMainActivity();
-                                    finish();
-                                }else{
-                                    Log.d(TAG, "LO PASA DE FRENTE: ");
-                                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                                    boolean success = editor
-                                            .putBoolean("islogged",true)
-                                            .commit();
-                                    goToMainActivity();
-                                    finish();
-                                }
-
-                            }else{
-                                Toast.makeText(LoginActivity.this, "Usuario o contraseña no coinciden", Toast.LENGTH_SHORT).show();
+                                usu=u;
+                                valid=true;
                             }
 
+                        }
 
+                        if(valid){
+                            linearLayout.setVisibility(View.GONE);
+                            progressBar.setVisibility(View.VISIBLE);
+                            boolean existe = sharedPreferences.getBoolean("isExist",false);
+                            Log.d(TAG, "EXISTE: "+existe);
+                            if (!existe){
+                                Log.d(TAG, "CREANDO SHAREDPREFENCE");
+                                Long id = usu.getId();
+                                String nombres = usu.getNombres();
+                                String apellidos = usu.getApellidos();
+                                String email = usu.getEmail();
+
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                boolean success = editor
+                                        .putBoolean("islogged",true)
+                                        .putBoolean("isExist",true)
+                                        .putLong("id",id)
+                                        .putString("nombres",nombres)
+                                        .putString("apellidos",apellidos)
+                                        .putString("username",usu.getPassword())
+                                        .putString("email",email)
+                                        .commit();
+                                goToMainActivity();
+
+                            }else{
+                                Log.d(TAG, "LO PASA DE FRENTE: ");
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                boolean success = editor
+                                        .putBoolean("islogged",true)
+                                        .commit();
+                                goToMainActivity();
+                            }
+
+                        }else {
+                            Toasty.error(LoginActivity.this,"Usuario o contraseña no coinciden",Toast.LENGTH_SHORT).show();
                         }
 
                     }else {
@@ -204,6 +217,8 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Usuario>> call, Throwable t) {
+
+                Toasty.error(LoginActivity.this,"Sin conexión a internet",Toast.LENGTH_SHORT).show();
 
             }
         });

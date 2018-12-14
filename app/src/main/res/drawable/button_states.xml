@@ -9,12 +9,6 @@
     <item android:drawable="@color/colorDisable"
         android:state_enabled="false" >
 
-        <shape android:shape="rectangle">
-
-            <size android:width="8dp"
-                android:height="8dp"/>
-        </shape>
-
     </item>
 
 </selector>

@@ -10,8 +10,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.microsoft.projectoxford.face.contract.Emotion;
-
 import java.util.List;
 
 import pe.jrivera6.reconocimientofacialapp.R;
@@ -46,7 +44,7 @@ public class RostroAdapter extends RecyclerView.Adapter<RostroAdapter.ViewHolder
             rostroRecortado = itemView.findViewById(R.id.img_rostro_enfocado);
             rostroGenero = itemView.findViewById(R.id.msg_genero);
             rostroEstado = itemView.findViewById(R.id.msg_emocion);
-            Log.d("AQUI", "EN EL VIEWHOLDER: LLEGO"+ rostroLista.size());
+
         }
     }
 
@@ -64,12 +62,17 @@ public class RostroAdapter extends RecyclerView.Adapter<RostroAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
 
         Rostro rostroModelo = rostroLista.get(i);
-        viewHolder.rostroGenero.setText(rostroModelo.getGenero_rostro());
-        viewHolder.rostroRecortado.setImageBitmap(rostrosRecortados.get(i));
-        viewHolder.rostroEstado.setText("Prueba");
-        Long estado = rostroModelo.getId();
-        Log.d(TAG, "ADAPTER: "+estado);
+        String estado = String.format("%s",rostroModelo.getEstado_rostro());
+        String genero="";
+        if(rostroModelo.getGenero_rostro().equals("male")){
+            genero="Hombre";
+        }else{
+            genero="Mujer";
+        }
 
+        viewHolder.rostroGenero.setText(genero);
+        viewHolder.rostroRecortado.setImageBitmap(rostrosRecortados.get(i));
+        viewHolder.rostroEstado.setText(estado);
 
     }
 
@@ -80,54 +83,6 @@ public class RostroAdapter extends RecyclerView.Adapter<RostroAdapter.ViewHolder
         Log.d("TAMAÑO", "getItemCount: "+tamaño);
         return tamaño;
 
-    }
-
-
-    private String getEmotion(Emotion emotion)
-    {
-        String emotionType = "";
-        double emotionValue = 0.0;
-        if (emotion.anger > emotionValue)
-        {
-            emotionValue = emotion.anger;
-            emotionType = "Molesto";
-        }
-        if (emotion.contempt > emotionValue)
-        {
-            emotionValue = emotion.contempt;
-            emotionType = "Desprecio";
-        }
-        if (emotion.disgust > emotionValue)
-        {
-            emotionValue = emotion.disgust;
-            emotionType = "Asco";
-        }
-        if (emotion.fear > emotionValue)
-        {
-            emotionValue = emotion.fear;
-            emotionType = "Miedo";
-        }
-        if (emotion.happiness > emotionValue)
-        {
-            emotionValue = emotion.happiness;
-            emotionType = "Felicidad";
-        }
-        if (emotion.neutral > emotionValue)
-        {
-            emotionValue = emotion.neutral;
-            emotionType = "Neutral";
-        }
-        if (emotion.sadness > emotionValue)
-        {
-            emotionValue = emotion.sadness;
-            emotionType = "Tristeza";
-        }
-        if (emotion.surprise > emotionValue)
-        {
-            emotionValue = emotion.surprise;
-            emotionType = "Sorpresa";
-        }
-        return String.format(emotionType, emotionValue);
     }
 
 

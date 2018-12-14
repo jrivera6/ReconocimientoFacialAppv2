@@ -4,7 +4,7 @@ public class Rostro {
 
     private Long id;
     private String genero_rostro;
-    private Long id_estado;
+    private String estado_rostro;
     private Long id_captura;
 
     public Rostro() {
@@ -26,12 +26,12 @@ public class Rostro {
         this.genero_rostro = genero_rostro;
     }
 
-    public Long getId_estado() {
-        return id_estado;
+    public String getEstado_rostro() {
+        return estado_rostro;
     }
 
-    public void setId_estado(Long id_estado) {
-        this.id_estado = id_estado;
+    public void setEstado_rostro(String estado_rostro) {
+        this.estado_rostro = estado_rostro;
     }
 
     public Long getId_captura() {
@@ -47,7 +47,7 @@ public class Rostro {
         return "Rostro{" +
                 "id=" + id +
                 ", genero_rostro='" + genero_rostro + '\'' +
-                ", id_estado=" + id_estado +
+                ", estado_rostro='" + estado_rostro + '\'' +
                 ", id_captura=" + id_captura +
                 '}';
     }

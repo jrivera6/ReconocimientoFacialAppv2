@@ -2,6 +2,8 @@ package pe.jrivera6.reconocimientofacialapp.activities;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -28,12 +30,16 @@ import com.microsoft.projectoxford.face.contract.Face;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Random;
 
+import es.dmoral.toasty.Toasty;
 import pe.jrivera6.reconocimientofacialapp.R;
 import pe.jrivera6.reconocimientofacialapp.helpers.ConectionApp;
 import pe.jrivera6.reconocimientofacialapp.helpers.ImageHelper;
@@ -164,12 +170,19 @@ public class CamaraResultActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialogInterface, int i) {
                 if (opciones[i].equals("Tomar Foto")) {
 
+                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+                        ActivityCompat.requestPermissions(CamaraResultActivity.this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},10);
+                        return;
+                    }
+
                     if (ContextCompat.checkSelfPermission(CamaraResultActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                         ActivityCompat.requestPermissions(CamaraResultActivity.this, new String[]{Manifest.permission.CAMERA}, PERMISSIONS_REQUEST);
 
                     } else {
                         openCameraActivity();
                     }
+
 
                 } else if (opciones[i].equals("Cargar Imagen")) {
 
@@ -211,17 +224,40 @@ public class CamaraResultActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+//        Log.d(TAG, "onActivityResult() returned: " + data.getData());
+
         if (requestCode == CAMERA_REQUEST || requestCode == GALLERY_REQUEST) {
             if (resultCode == RESULT_OK) {
 
                 try {
 
+
                     if (requestCode == CAMERA_REQUEST) {
-                        imagePath = data.getData();
+
+                        Bundle extras = data.getExtras();
+
+                        Bitmap bitmap = (Bitmap) extras.get("data");
+
+                        File directory = new ContextWrapper(this).getDir("photos", Context.MODE_PRIVATE);   // Directorio interno "app_photos"
+                        File photofile = new File(directory, "IMG_" + new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date()) + ".jpg");
+
+                        Log.d("TAG", "Save photo file to " + photofile.getAbsolutePath());
+                        FileOutputStream fos = new FileOutputStream(photofile);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                        fos.close();
+
+
+
+
+//                        imagePath = data.getData();
+                        imagePath = Uri.fromFile(new File(photofile.getAbsolutePath()));
+
+                        Log.d(TAG, "onActivityResult() returned: " + imagePath);
                         btnExaminar.setEnabled(true);
                         bitmapImg = ImageHelper.loadSizeLimitedBitmapFromUri(imagePath, getContentResolver());
-                        if (bitmapImg != null) {
-                            imgVistaPrevia.setImageBitmap(bitmapImg);
+
+                        if (bitmap != null) {
+                            imgVistaPrevia.setImageBitmap(bitmap);
                         }
 
                     } else {
@@ -265,8 +301,9 @@ public class CamaraResultActivity extends AppCompatActivity {
     //Funcion para enviar datos al servicio rest
     public void enviarCapturaServicio() {
         //Formatear fecha actual
-        Date fecha_actual = new Date();
+
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date fecha_actual = new Date();
         String fecha_captura = dateFormat.format(fecha_actual);
 
         //Variables de la captura
@@ -309,29 +346,36 @@ public class CamaraResultActivity extends AppCompatActivity {
     private void setImageAfterDetect(Face[] result, boolean funciono) {
 
         mProgressDialog.dismiss();
-        btnExaminar.setEnabled(false);
+        btnDisable();
+
         String resultadoDeteccion = "";
         if (funciono) {
 
-            if (result != null) {
-
-                //Enmarca los rostros
-                imgVistaPrevia.setImageBitmap(ImageHelper.drawFaceRectanglesOnBitmap(bitmapImg, result, true));
-
-                cantidad_rostros = result.length;
-
-                FaceRepository.build(result, bitmapImg);
-                enviarCapturaServicio();
-                Log.d(TAG, "NOMBRE DE LA CAPTURA: "+nombre_captura);
-
-                //Cambiar de activity
-                Intent i = new Intent(CamaraResultActivity.this, FaceResultActivity.class);
-                i.putExtra("nombre_captura",nombre_captura);
-                startActivity(i);
-
+            if (result.length<=0){
+                Toasty.error(this,"No se encontraron rostros.\nIngrese otra imagen",Toast.LENGTH_LONG,true).show();
+                return;
             }
 
+            //Enmarca los rostros
+            imgVistaPrevia.setImageBitmap(ImageHelper.drawFaceRectanglesOnBitmap(bitmapImg, result, true));
+
+            cantidad_rostros = result.length;
+
+            FaceRepository.build(result, bitmapImg);
+            enviarCapturaServicio();
+            Log.d(TAG, "NOMBRE DE LA CAPTURA: "+nombre_captura);
+
+            //Cambiar de activity
+            Intent i = new Intent(CamaraResultActivity.this, FaceResultActivity.class);
+            i.putExtra("nombre_captura",nombre_captura);
+            startActivity(i);
+
         }
+    }
+
+    private void btnDisable() {
+        btnExaminar.setEnabled(false);
+
     }
 
 

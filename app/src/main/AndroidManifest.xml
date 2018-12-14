@@ -30,30 +30,42 @@
             android:name="DOMAIN_PACKAGE_NAME"
             android:value="pe.jrivera6.reconocimientofacialapp.models" />
 
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="pe.jrivera6.reconocimientofacialapp.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"></meta-data>
+        </provider>
+
         <activity android:name=".activities.MainActivity">
 
         </activity>
         <activity
             android:name=".activities.LoginActivity"
             android:theme="@style/NoActionBarThemeLogin">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
         <activity
             android:name=".activities.CamaraResultActivity"
             android:theme="@style/NoActionBarThemeCamera" />
         <activity
             android:name=".activities.RegisterActivity"
-            android:theme="@style/NoActionBarThemeRegistro" >
+            android:theme="@style/NoActionBarThemeRegistro"></activity>
+        <activity android:name=".activities.FaceResultActivity"></activity>
+        <activity android:name=".activities.GraficaActivity"
+            android:theme="@style/NoActionBarThemeMain">
 
 
 
         </activity>
-        <activity android:name=".activities.FaceResultActivity"></activity>
     </application>
 
 </manifest>

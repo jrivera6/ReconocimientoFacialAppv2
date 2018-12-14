@@ -4,7 +4,7 @@
     <string name="subscription_key">af5ad89df6774062ae1a07ee754b8b15</string>
     <string name="endpoint">https://westus.api.cognitive.microsoft.com/face/v1.0</string>
 
-    <string name="app_name">ReconocimientoFacialApp</string>
+    <string name="app_name">Buscando Emociones</string>
 
 
 </resources>
