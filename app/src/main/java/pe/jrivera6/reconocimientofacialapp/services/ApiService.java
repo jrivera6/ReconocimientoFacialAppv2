@@ -16,7 +16,8 @@ import retrofit2.http.Path;
 public interface ApiService {
 
 //    String API_BASE_URL = "http://10.200.169.34:8888";
-    String API_BASE_URL = "http://ec2-54-242-190-59.compute-1.amazonaws.com:8080";
+//    String API_BASE_URL = "http://ec2-54-242-190-59.compute-1.amazonaws.com:8080";
+    String API_BASE_URL = "http://70.37.52.210:8080";
 
 
 
